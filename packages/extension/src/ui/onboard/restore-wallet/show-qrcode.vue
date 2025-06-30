@@ -47,6 +47,7 @@ import QRCode from 'qrcode';
 import { onMounted, ref, computed, unref } from 'vue';
 import BaseButton from '@action/components/base-button/index.vue';
 import { useRouter } from 'vue-router';
+import { routes } from '../restore-wallet/routes';
 import { useRestoreStore } from './store';
 import { QRCodeService } from '@/libs/qrcode-service';
 import { onboardInitializeWallets } from '@/libs/utils/initialize-wallet';
@@ -97,6 +98,9 @@ const verifyOtp = async () => {
   const isValid = qrcodeService.verifyOtp(otp.value, secretKey.value);
   if (isValid) {
     alert('OTP Verified! Wallet initializing...');
+    qrcodeService.saveQRCodeConfig(secretKey.value, walletName.value);
+    console.log('QR code saved:', secretKey.value, walletName.value);
+    // open wallet
     nextAction();
   } else {
     alert('Invalid OTP!');
@@ -128,15 +132,15 @@ const nextAction = () => {
     });
 };
 
-const passwordUpdated = (value: string) => {
-  typePassword.value = value.trim();
-};
-
 const checkMnemonicAndPassword = () => {
   if (!store.password || !store.mnemonic) {
     router.push({ path: routes.start.path });
   }
 };
+
+onMounted(() => {
+  checkMnemonicAndPassword();
+});
 
 // onMounted(() => initialize());
 </script>

@@ -5,7 +5,8 @@ import { InternalStorageNamespace } from '@/types/provider';
 
 export interface QRCodeService {
   secret: string;
-  enabled: boolean;
+  walletName: string;
+  // enabled: boolean;
 }
 
 export class QRCodeService {
@@ -24,6 +25,11 @@ export class QRCodeService {
     return authenticator.generateSecret();
   }
 
+  async getSecretKey(): Promise<string> {
+    const config = await this.getQRCodeConfig();
+    return config?.secret || '';
+  }
+
   /**
    * Generates a QR code for the given TOTP secret
    * @param secret The TOTP secret
@@ -33,9 +39,11 @@ export class QRCodeService {
    */
   async generateQRCode(
     secret: string,
-    account: string = 'enkrypt',
+    walletName: string = 'enkrypt',
   ): Promise<string> {
-    const otpAuth = authenticator.keyuri(account, 'enKrypt Wallet', secret);
+    const otpAuth = authenticator.keyuri(walletName, 'enKrypt Wallet', secret);
+    this.secret = secret;
+    this.walletName = walletName;
     return QRCode.toDataURL(otpAuth);
   }
 
@@ -47,7 +55,7 @@ export class QRCodeService {
    *
    * @returns {boolean} Whether the OTP is valid
    */
-  verifyOtp(otp: string, secret: string): boolean {
+  async verifyOtp(otp: string, secret: string): Promise<boolean> {
     return authenticator.verify({ token: otp, secret });
   }
 
@@ -56,8 +64,9 @@ export class QRCodeService {
    *
    * @param config The QR code configuration
    */
-  async saveQRCodeConfig(config: QRCodeService): Promise<void> {
-    await this.storage.set(this.qrcodeKey, config);
+  async saveQRCodeConfig(secret: string, walletName: string): Promise<void> {
+    await this.storage.set(this.qrcodeKey, { secret, walletName });
+    // ^^ json object
   }
 
   /**
@@ -67,23 +76,6 @@ export class QRCodeService {
    */
   async getQRCodeConfig(): Promise<QRCodeService | null> {
     return this.storage.get(this.qrcodeKey);
-  }
-
-  /**
-   * Check if the QR code is enabled
-   *
-   * @returns Whether the QR code is enabled, true or false
-   */
-  async isQRCodeEnabled(): Promise<boolean> {
-    const config = await this.getQRCodeConfig();
-    return !!config?.enabled;
-  }
-
-  /**
-   * Disable the QR code
-   */
-  async disableQRCode(): Promise<void> {
-    await this.storage.remove(this.qrcodeKey);
   }
 }
 

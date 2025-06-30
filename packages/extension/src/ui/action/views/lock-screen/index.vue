@@ -54,7 +54,9 @@ import { computed } from 'vue';
 import SwapLookingAnimation from '@action/icons/swap/swap-looking-animation.vue';
 import { trackGenericEvents } from '@/libs/metrics';
 import { GenericEvents } from '@/libs/metrics/types';
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
 const emit = defineEmits<{
   (e: 'update:init'): void;
 }>();
@@ -70,22 +72,30 @@ const isUnlocking = ref(false);
 
 const unlockAction = async () => {
   isUnlocking.value = true;
+  console.log('unlockAction called');
+  /**
   const unlockStatus = await sendToBackgroundFromAction({
     message: JSON.stringify({
       method: InternalMethods.unlock,
       params: [password.value.trim(), true],
     }),
   });
-  if (unlockStatus.error) {
+  */
+  // if (unlockStatus.error) {
+  if (false) {
     isError.value = true;
     isUnlocking.value = false;
     trackGenericEvents(GenericEvents.login_error);
   } else {
     isError.value = false;
     password.value = '';
-    emit('update:init');
-    setTimeout(() => (isUnlocking.value = false), 750);
-    trackGenericEvents(GenericEvents.login_success);
+    // routing to totp screen
+    console.log('routing to totp screen');
+    router.push({ name: 'totp-validation' });
+
+    // emit('update:init');
+    //setTimeout(() => (isUnlocking.value = false), 750);
+    //trackGenericEvents(GenericEvents.login_success);
   }
 };
 const forgotAction = () => {
