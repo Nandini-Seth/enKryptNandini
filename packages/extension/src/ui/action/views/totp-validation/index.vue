@@ -1,5 +1,5 @@
 <template>
-  <div class="totp-validation">
+  <div class="totp-validation__container">
     <p class="totp-validation__description">
       Enter the 6-digit code from your authenticator app.
     </p>

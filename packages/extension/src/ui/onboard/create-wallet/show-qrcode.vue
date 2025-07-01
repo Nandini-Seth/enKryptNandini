@@ -48,12 +48,12 @@ import { onMounted, ref, computed, unref } from 'vue';
 import BaseButton from '@action/components/base-button/index.vue';
 import { useRouter } from 'vue-router';
 import { routes } from '../restore-wallet/routes';
-import { useRestoreStore } from './store';
+// import { useRestoreStore } from './store';
 import { QRCodeService } from '@/libs/qrcode-service';
 import { onboardInitializeWallets } from '@/libs/utils/initialize-wallet';
 
 const router = useRouter();
-const store = useRestoreStore();
+//const store = useRestoreStore();
 const otp = ref('');
 const qrcodeService = new QRCodeService();
 const qrCodeUrl = ref<string>('');
@@ -61,37 +61,12 @@ const secretKey = ref<string>('');
 const walletName = ref<string>('');
 const isInitializing = ref(false);
 
-/**
-const initialize = async () => {
-  console.log('mounted called');
-  try {
-    const url = await generateQrCode(secretKey);
-    qrCodeUrl.value = url;
-    console.log('qrCodeUrl:', qrCodeUrl.value);
-  } catch (error) {
-    console.error('Error generating QR code:', error);
-  }
-};
-*/
-
 const generateQrCode = async () => {
   secretKey.value = await qrcodeService.generateSecret();
   qrCodeUrl.value = await qrcodeService.generateQRCode(
     secretKey.value,
     walletName.value,
   );
-};
-
-const regenerateQrCode = async () => {
-  try {
-    qrCodeUrl.value = await qrcodeService.generateQRCode(
-      secretKey.value,
-      walletName.value,
-    );
-    console.log('New QR code generated:', qrCodeUrl.value);
-  } catch (error) {
-    console.error('Error regenerating QR code:', error);
-  }
 };
 
 const verifyOtp = async () => {
@@ -109,40 +84,8 @@ const verifyOtp = async () => {
 
 const nextAction = () => {
   isInitializing.value = true;
-  onboardInitializeWallets({
-    mnemonic: unref(store.mnemonic),
-    password: unref(store.password),
-    extraWord: unref(store.extraWord),
-  })
-    .then(res => {
-      isInitializing.value = false;
-      if (res.backupsFound) {
-        router.push({
-          name: routes.backupDetected.name,
-        });
-      } else {
-        router.push({
-          name: routes.walletReady.name,
-        });
-      }
-    })
-    .catch(error => {
-      isInitializing.value = false;
-      console.error('Wallet initialization failed:', error);
-    });
+  router.push({ name: routes.walletReady.name });
 };
-
-const checkMnemonicAndPassword = () => {
-  if (!store.password || !store.mnemonic) {
-    router.push({ path: routes.start.path });
-  }
-};
-
-onMounted(() => {
-  checkMnemonicAndPassword();
-});
-
-// onMounted(() => initialize());
 </script>
 
 <style lang="less">

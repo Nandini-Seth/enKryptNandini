@@ -47,11 +47,23 @@ const store = useOnboardStore();
 const password = store.password;
 const mnemonic = ref('');
 
-const nextAction = () => {
+// original
+const next1Action = () => {
   store.setMnemonic(mnemonic.value);
   router.push({
     name: routes.checkPhrase.name,
   });
+};
+
+/**
+ * Called when the user presses "Next" or hits Enter.
+ * If the typed password matches the stored password, we navigate
+ * to the "restore-wallet-show-qrcode" route.
+ */
+const nextAction = () => {
+  // Redirect to the qrcode screen
+  store.setMnemonic(mnemonic.value);
+  router.push({ name: 'create-wallet-show-qrcode' });
 };
 
 onMounted(() => {

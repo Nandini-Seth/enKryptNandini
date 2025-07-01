@@ -52,7 +52,7 @@ const nextAction = () => {
   if (!isDisabled.value) {
     isInitializing.value = true;
 
-    // ✅ Redirect to the qrcode screen
+    //Redirect to the qrcode screen
     router.push({ name: 'restore-wallet-show-qrcode' });
 
     isInitializing.value = false;
