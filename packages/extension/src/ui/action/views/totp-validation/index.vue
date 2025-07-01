@@ -1,6 +1,6 @@
 <template>
-  <div class="lock-screen-totp-validation">
-    <p class="lock-screen-totp-validation__description">
+  <div class="totp-validation">
+    <p class="totp-validation__description">
       Enter the 6-digit code from your authenticator app.
     </p>
 
@@ -8,7 +8,7 @@
       v-model="otp"
       type="text"
       placeholder="123456"
-      class="lock-screen-totp-validation__input"
+      class="totp-validation__input"
       :maxlength="6"
       @keyup.enter="verifyOtp"
     />
@@ -30,6 +30,9 @@ import { QRCodeService } from '@/libs/qrcode-service';
 import { onboardInitializeWallets } from '@/libs/utils/initialize-wallet';
 
 const router = useRouter();
+const emit = defineEmits<{
+  (e: 'update:init'): void;
+}>();
 //const store = useRestoreStore();
 const otp = ref<string>('');
 const qrcodeService = new QRCodeService();
@@ -47,10 +50,17 @@ const verifyOtp = async () => {
     // qrcodeService.saveQRCodeConfig(secretKey.value, walletName.value);
     // console.log('QR code saved:', secretKey.value, walletName.value);
     // open wallet
-    // nextAction();
+    nextAction();
   } else {
     alert('Invalid OTP!');
   }
+};
+
+const nextAction = () => {
+  // called by verifyOtp after verification success
+  console.log('nextAction called');
+  emit('update:init');
+  // router.push({ name: 'home' });
 };
 
 onMounted(() => {
@@ -58,98 +68,70 @@ onMounted(() => {
 });
 </script>
 
-<style lang="less">
-@import '@/ui/action/styles/theme.less';
-
-.lock-screen-totp-validation {
+<style lang="less" scoped>
+@import '@action/styles/theme.less';
+.totp-validation {
   width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-
-  &__title {
-    font-style: normal;
-    font-weight: 700;
-    font-size: 34px;
-    line-height: 40px;
-    color: @primaryLabel;
-    margin-bottom: 8px;
-  }
-
-  &__description {
-    font-size: 16px;
-    color: @secondaryLabel;
-    margin-bottom: 16px;
-  }
-
-  &__form {
+  height: 100%;
+  box-sizing: border-box;
+  &__container {
+    height: 600px;
     width: 100%;
-    padding: 16px 0;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 999;
+    background: radial-gradient(
+        100% 50% at 100% 50%,
+        rgba(250, 250, 250, 0.92) 0%,
+        rgba(250, 250, 250, 0.98) 100%
+      )
+      @primary;
     display: flex;
-    flex-direction: column;
-    gap: 12px;
-    align-items: center;
-  }
-
-  &__label {
-    font-size: 14px;
-    color: @secondaryLabel;
-  }
-
-  &__input {
-    width: 80%;
-    padding: 12px;
-    font-size: 16px;
-    border: 1px solid;
-    border-radius: 8px;
-    text-align: center;
-  }
-
-  &__qr-image {
-    width: 200px;
-    height: 200px;
-    display: flex;
+    flex-direction: row;
     align-items: center;
     justify-content: center;
-    border: 1px solid;
-    border-radius: 8px;
-    padding: 10px;
-    margin-bottom: 16px;
-
-    img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
+  }
+  &__wrap {
+    width: 320px;
+    height: auto;
+    box-sizing: border-box;
+    position: relative;
+    h4 {
+      font-style: normal;
+      font-weight: 700;
+      font-size: 24px;
+      line-height: 32px;
+      color: @primaryLabel;
+      margin: 0 0 8px 0;
     }
   }
+  &__unlocking {
+    width: 300px;
+    height: 300px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    position: relative;
 
-  &__button {
-    width: 50%;
-    padding: 12px;
-    font-size: 16px;
-    font-weight: 600;
-    color: white;
-    background-color: #6200ea;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: 0.3s ease;
-
-    &:disabled {
-      background-color: white;
-      cursor: not-allowed;
-    }
-
-    &:hover:not(:disabled) {
-      background-color: darken(#6200ea, 10%);
+    svg {
+      width: 132px;
+      position: relative;
+      z-index: 2;
     }
   }
-
-  &__hint {
-    font-size: 14px;
-    color: @secondaryLabel;
-    margin-top: 10px;
+  &__logo {
+    margin-bottom: 24px;
+  }
+  &__forgot {
+    position: absolute;
+    width: 320px;
+    left: 50%;
+    margin-left: -160px;
+    bottom: 20px;
   }
 }
 </style>

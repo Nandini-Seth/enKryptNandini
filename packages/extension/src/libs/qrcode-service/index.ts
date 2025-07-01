@@ -3,13 +3,15 @@ import QRCode from 'qrcode';
 import BrowserStorage from '../common/browser-storage';
 import { InternalStorageNamespace } from '@/types/provider';
 
-export interface QRCodeService {
+export interface IQRCodeService {
   secret: string;
   walletName: string;
   // enabled: boolean;
 }
 
-export class QRCodeService {
+export class QRCodeService implements IQRCodeService {
+  secret: string = '';
+  walletName: string = '';
   private storage: BrowserStorage;
   private qrcodeKey = 'qrcode-key';
 

@@ -12,7 +12,7 @@ import {
   SettingEventType,
   SwapEventType,
   UpdatesEventType,
-  UpdatesOpenLocation
+  UpdatesOpenLocation,
 } from './types';
 
 const metrics = new Metrics();
@@ -25,19 +25,19 @@ const trackNetwork = (
   event: NetworkChangeEvents,
   options: {
     provider?: ProviderName;
-    network?: NetworkNames,
-    networkTab?: string,
-    networkType?: NetworkType,
-    isPinned?: boolean,
-    sortOption?: string,
-    customRpcUrl?: string,
-    customNetworkName?: string,
-    customNetworkNameLong?: string,
-    customNetworkCurrency?: string,
-    customNetworkCurrencyLong?: string,
-    customChainId?: string,
-    customBlockExplorerUrlTx?: string
-    customBlockExplorerUrlAddr?: string
+    network?: NetworkNames;
+    networkTab?: string;
+    networkType?: NetworkType;
+    isPinned?: boolean;
+    sortOption?: string;
+    customRpcUrl?: string;
+    customNetworkName?: string;
+    customNetworkNameLong?: string;
+    customNetworkCurrency?: string;
+    customNetworkCurrencyLong?: string;
+    customChainId?: string;
+    customBlockExplorerUrlTx?: string;
+    customBlockExplorerUrlAddr?: string;
   },
 ) => {
   metrics.track('network', { event, ...options });
@@ -93,16 +93,20 @@ const trackDAppsEvents = (
   metrics.track('dapps', { event, ...options });
 };
 
-const trackUpdatesEvents = (event: UpdatesEventType, options: {
-  network: NetworkNames;
-  location?: UpdatesOpenLocation;
-  duration?: number;
-}): void => {
+const trackUpdatesEvents = (
+  event: UpdatesEventType,
+  options: {
+    network: NetworkNames;
+    location?: UpdatesOpenLocation;
+    duration?: number;
+  },
+): void => {
   metrics.track('updatesClick', { event, ...options });
-
-}
+};
 const optOutofMetrics = (optOut: boolean) => {
-  if (!__IS_FIREFOX__) {
+  // Access the global __IS_FIREFOX__ variable
+  const isFirefox = typeof __IS_FIREFOX__ !== 'undefined' ? __IS_FIREFOX__ : false;
+  if (!isFirefox) {
     metrics.setOptOut(false);
     metrics.track('settings', {
       event: SettingEventType.OptOut,
@@ -121,5 +125,6 @@ export {
   trackDAppsEvents,
   optOutofMetrics,
   trackGenericEvents,
-  trackUpdatesEvents
+  trackUpdatesEvents,
+  GenericEvents,
 };
