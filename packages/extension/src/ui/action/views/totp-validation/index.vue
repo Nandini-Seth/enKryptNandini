@@ -1,23 +1,25 @@
 <template>
   <div class="totp-validation__container">
-    <p class="totp-validation__description">
-      Enter the 6-digit code from your authenticator app.
-    </p>
+    <div class="totp-validation__wrap">
+      <p class="totp-validation__description">
+        Enter the 6-digit code from your authenticator app.
+      </p>
 
-    <input
-      v-model="otp"
-      type="text"
-      placeholder="123456"
-      class="totp-validation__input"
-      :maxlength="6"
-      @keyup.enter="verifyOtp"
-    />
+      <input
+        v-model="otp"
+        type="text"
+        placeholder="123456"
+        class="totp-validation__input"
+        :maxlength="6"
+        @keyup.enter="verifyOtp"
+      />
 
-    <base-button
-      title="Verify OTP"
-      :click="verifyOtp"
-      :disabled="otp.length !== 6"
-    />
+      <base-button
+        title="Verify OTP"
+        :click="verifyOtp"
+        :disabled="otp.length !== 6"
+      />
+    </div>
   </div>
 </template>
 
@@ -122,6 +124,19 @@ onMounted(() => {
       position: relative;
       z-index: 2;
     }
+  }
+  &__description {
+    font-size: 16px;
+    color: @secondaryLabel;
+    margin-bottom: 16px;
+  }
+  &__input {
+    width: 80%;
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid;
+    border-radius: 8px;
+    text-align: center;
   }
   &__logo {
     margin-bottom: 24px;
